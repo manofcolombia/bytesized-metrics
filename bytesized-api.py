@@ -23,9 +23,9 @@ api = args.key
 url = args.url
 params= {'api_key': api}
 
-g_memory_usage = Gauge('memory_usage', 'AppBox Memory Usage')
-g_disk_quota = Gauge('disk_usage', 'AppBox Disk Quota')
-g_bandwidth_quota = Gauge('bandwidth_usage', 'AppBox Bandwidth Quota')
+g_memory_usage = Gauge('bytesized_appbox_memory_usage', 'AppBox Memory Usage')
+g_disk_quota = Gauge('bytesized_appbox_disk_usage', 'AppBox Disk Quota')
+g_bandwidth_quota = Gauge('bytesized_appbox_bandwidth_usage', 'AppBox Bandwidth Quota')
 
 def get_byte_stats():
     response = requests.get(url, params=params)
