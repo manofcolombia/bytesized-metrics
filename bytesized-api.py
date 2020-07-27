@@ -23,9 +23,9 @@ api = args.key
 url = args.url
 params= {'api_key': api}
 
-g_memory_usage = Gauge('bytesized_appbox_memory_usage', 'AppBox Memory Usage')
-g_disk_quota = Gauge('bytesized_appbox_disk_usage', 'AppBox Disk Quota')
-g_bandwidth_quota = Gauge('bytesized_appbox_bandwidth_usage', 'AppBox Bandwidth Quota')
+g_bytesized_appbox_memory_usage = Gauge('bytesized_appbox_memory_usage', 'AppBox Memory Usage')
+g_bytesized_appbox_disk_quota = Gauge('bytesized_appbox_disk_usage', 'AppBox Disk Quota')
+g_bytesized_appbox_bandwidth_quota = Gauge('bytesized_appbox_bandwidth_usage', 'AppBox Bandwidth Quota')
 
 def get_byte_stats():
     response = requests.get(url, params=params)
@@ -41,9 +41,9 @@ def get_byte_stats():
         sys.stdout.write('MEMORY_USAGE: ' + str(memory_usage) + '\n')
         sys.stdout.write('DISK_QUOTA: ' + str(disk_quota) + '\n')
         sys.stdout.write('BANDWIDTH_QUOTA: ' + str(bandwidth_quota) + '\n\n')
-        g_memory_usage.set(memory_usage)
-        g_disk_quota.set(disk_quota)
-        g_bandwidth_quota.set(bandwidth_quota)
+        g_bytesized_appbox_memory_usage.set(memory_usage)
+        g_bytesized_appbox_disk_quota.set(disk_quota)
+        g_bytesized_appbox_bandwidth_quota.set(bandwidth_quota)
     
     else:
         sys.stderr.write('Request failed ' + str(response) + '\n\n')
