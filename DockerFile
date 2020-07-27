@@ -1,0 +1,10 @@
+FROM python:3-alpine
+RUN mkdir /app
+WORKDIR /app
+ADD bytesized-api.py /app
+ADD entrypoint.sh /app
+RUN pip install requests prometheus_client
+EXPOSE 8888/tcp
+ENV API="12345" \
+    INTERVAL="600"
+ENTRYPOINT ["sh", "entrypoint.sh"]
