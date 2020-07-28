@@ -7,7 +7,7 @@ from prometheus_client import start_http_server, Gauge
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "-I", "--interval", required=True, type=int, help="interval on which to scrape"
+    "-I", "--interval", default=600, type=int, help="interval on which to scrape"
 )
 parser.add_argument(
     "-K", "--key", required=True, type=str, help="API Key for Bytesized Hosting"
@@ -51,5 +51,10 @@ def get_byte_stats():
 if __name__ == '__main__':
     start_http_server(8888, addr='0.0.0.0')
     while True:
-        get_byte_stats()
+        try:
+            get_byte_stats()
+        except:
+            sys.stderr.write('Request to api failed.\nPlease verify you have the correct api key.')
+            exit()
         time.sleep(interval)
+
