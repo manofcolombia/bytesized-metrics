@@ -8,3 +8,7 @@ Generate your api key here: https://bytesized-hosting.com/api_keys
 
 Interval is in seconds.
 Recommended interval is 600. The appbox api seems to only update between 10-30 minute intervals.
+
+# Screenshots
+
+![alt text](https://github.com/manofcolombia/bytesized-metrics/blob/dev/extras/bytesized-dashboard.png?raw=true)
