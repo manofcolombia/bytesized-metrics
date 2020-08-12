@@ -1,2 +1,2 @@
 #!/bin/sh
-python3 -u /app/bytesized-api.py -K ${API} -I ${INTERVAL}
+python3 -u /app/bytesized_api.py -K ${API} -I ${INTERVAL}

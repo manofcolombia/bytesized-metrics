@@ -12,7 +12,9 @@ USER abc
 
 WORKDIR /app
 
-ADD bytesized-api.py /app
+ADD bytesized_api.py /app
+
+ADD byte/ /app/byte
 
 ADD entrypoint.sh /app
 
