@@ -1,7 +1,6 @@
 import requests
 import json
 import time
-import sys
 import argparse
 import logging
 from byte.byte_account import account
