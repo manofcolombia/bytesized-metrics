@@ -5,16 +5,17 @@ class log_keeper:
     
     def __init__(self, metrics):
         self.metrics = metrics
+        self.response_code = self.metrics.response_code
         self.server_name = self.metrics.server_name
         self.memory_usage = self.metrics.memory_usage
         self.disk_quota = self.metrics.disk_quota
         self.bandwidth_quota = self.metrics.bandwidth_quota
 
-
-
     def success(self):
+
         logging.info(
             f"""
+                Response Code: {self.response_code}
                 Server Name: {self.server_name}
                 Memory Usage: {self.memory_usage}
                 Disk Quota: {self.disk_quota}
@@ -23,4 +24,5 @@ class log_keeper:
         )
 
     def bad_key(self):
-        logging.info("Request to api failed.\nPlease verify you have the correct api key.")
+        logging.info("Response Code: " + str(self.response_code))
+        logging.info("Request to api failed. Please verify you have the correct api key.")
