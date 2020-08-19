@@ -13,6 +13,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 app = Flask(__name__)
 
+gauges = {}
+gauges['memory_usage'] = Gauge('bytesized_memory_usage', 'AppBox Memory Usage')
+gauges['disk_quota'] = Gauge('bytesized_disk_usage', 'AppBox Disk Quota')
+gauges['bandwidth_quota'] = Gauge('bytesized_bandwidth_usage', 'AppBox Bandwidth Quota')
+
 @app.route('/metrics')
 def main():
     try:
@@ -49,10 +54,6 @@ def byte_parser():
     return byte_parsed
 
 def prom_gauge_set(metrics):
-    gauges = {}
-    gauges['memory_usage'] = Gauge('bytesized_memory_usage', 'AppBox Memory Usage')
-    gauges['disk_quota'] = Gauge('bytesized_disk_usage', 'AppBox Disk Quota')
-    gauges['bandwidth_quota'] = Gauge('bytesized_bandwidth_usage', 'AppBox Bandwidth Quota')
     gauges['memory_usage'].set(metrics.memory_usage)
     gauges['disk_quota'].set(metrics.disk_quota)
     gauges['bandwidth_quota'].set(metrics.bandwidth_quota)
