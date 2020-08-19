@@ -26,3 +26,4 @@ class log_keeper:
     def bad_key(self):
         logging.info("Response Code: " + str(self.response_code))
         logging.info("Request to api failed. Please verify you have the correct api key.")
+        return "Response Code: " + str(self.response_code) + " Request to api failed. Please verify you have the correct api key."
