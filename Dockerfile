@@ -20,7 +20,6 @@ ADD entrypoint.sh /app
 
 EXPOSE 8888/tcp
 
-ENV API="12345" \
-    INTERVAL="600"
+ENV API="12345" 
 
 ENTRYPOINT ["sh", "entrypoint.sh"]
