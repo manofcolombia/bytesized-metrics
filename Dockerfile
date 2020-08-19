@@ -3,7 +3,7 @@ FROM lsiobase/alpine.python3
 LABEL maintainers="manofcolombia,crutonjohn"
 
 RUN \
-    pip install requests prometheus_client && \
+    pip install requests prometheus_client flask && \
     chown -R abc:abc \
         /config \
         /app
