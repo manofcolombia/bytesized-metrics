@@ -1,14 +1,10 @@
-FROM lsiobase/alpine.python3
+FROM python:3.8.5-alpine3.12
 
 LABEL maintainers="manofcolombia,crutonjohn"
 
 RUN \
     pip install requests prometheus_client flask && \
-    chown -R abc:abc \
-        /config \
-        /app
-
-USER abc
+    mkdir /app
 
 WORKDIR /app
 
