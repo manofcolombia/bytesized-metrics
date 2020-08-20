@@ -10,6 +10,7 @@ class log_keeper:
         self.memory_usage = self.metrics.memory_usage
         self.disk_quota = self.metrics.disk_quota
         self.bandwidth_quota = self.metrics.bandwidth_quota
+        self.days_paid_till = self.metrics.days_paid_till
 
     def success(self):
 
@@ -20,6 +21,7 @@ class log_keeper:
                 Memory Usage: {self.memory_usage}
                 Disk Quota: {self.disk_quota}
                 Bandwidth Quota: {self.bandwidth_quota}
+                Days till Next Payment: {self.days_paid_till}
             """
         )
 
