@@ -17,6 +17,7 @@ gauges = {}
 gauges['memory_usage'] = Gauge('bytesized_memory_usage', 'AppBox Memory Usage')
 gauges['disk_quota'] = Gauge('bytesized_disk_usage', 'AppBox Disk Quota')
 gauges['bandwidth_quota'] = Gauge('bytesized_bandwidth_usage', 'AppBox Bandwidth Quota')
+gauges['days_paid_till'] = Gauge('bytesized_days_paid_till', 'AppBox Days till next payment')
 
 @app.route('/metrics')
 def main():
@@ -57,6 +58,7 @@ def prom_gauge_set(metrics):
     gauges['memory_usage'].set(metrics.memory_usage)
     gauges['disk_quota'].set(metrics.disk_quota)
     gauges['bandwidth_quota'].set(metrics.bandwidth_quota)
+    gauges['days_paid_till'].set(metrics.days_paid_till)
     return gauges
 
 if __name__ == "__main__":
