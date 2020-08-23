@@ -1,9 +1,0 @@
-language: python
-env: API_KEY=bytesized_account_key
-python:
-  - "3.7"
-  - "3.8"
-install:
-  - pip install -r requirements.txt
-script:
-  - python3 -u bytesized_api.py -K $API_KEY

@@ -1,13 +1,11 @@
-import prometheus_client
-import requests
-import json
 import argparse
 import logging
+import prometheus_client
+import requests
+from flask import Response, Flask
+from prometheus_client import Gauge
 from byte.byte_account import account
 from byte.byte_logger import log_keeper
-from flask import Response, Flask
-from multiprocessing import Process
-from prometheus_client import Gauge, generate_latest
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
@@ -34,25 +32,25 @@ def main():
 
     if metrics.response_code == 200:
         log_keeper.success(metrics)
-        gauges = prom_gauge_set(metrics)
+        gauges_set = prom_gauge_set(metrics)
         res = []
-        for k,v in gauges.items():
-            res.append(prometheus_client.generate_latest(v))
-        return Response(res,mimetype="text/plain")
+        for attr, value in gauges_set.items():
+            res.append(prometheus_client.generate_latest(value))
+        return Response(res, mimetype="text/plain")
 
-    elif metrics.response_code != 200:
-        return log_keeper.bad_key(metrics)
+    return log_keeper.bad_key(metrics)
 
 def byte_parser():
-    byte_parser = argparse.ArgumentParser()
-    byte_parser.add_argument(
-            "-K", "--key", required=True, type=str, help="API Key for Bytesized Hosting"
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-K", "--key", required=True, type=str, help="API Key for Bytesized Hosting"
         )
-    byte_parser.add_argument(
-            "-U", "--url", default="https://bytesized-hosting.com/api/v1/accounts.json", type=str, help="url to accounts api"
+    parser.add_argument(
+        "-U", "--url", default="https://bytesized-hosting.com/api/v1/accounts.json",
+        type=str, help="url to accounts api"
         )
-    byte_parsed = byte_parser.parse_args()
-    return byte_parsed
+    parsed = parser.parse_args()
+    return parsed
 
 def prom_gauge_set(metrics):
     gauges['memory_usage'].set(metrics.memory_usage)
