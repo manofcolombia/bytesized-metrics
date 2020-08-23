@@ -1,3 +1,4 @@
+"""Bytesized prometheus exporter"""
 import argparse
 import logging
 import prometheus_client
@@ -19,6 +20,7 @@ gauges['days_paid_till'] = Gauge('bytesized_days_paid_till', 'AppBox Days till n
 
 @app.route('/metrics')
 def main():
+    """Main function"""
     try:
         args = byte_parser()
         url = args.url
@@ -36,11 +38,13 @@ def main():
         res = []
         for attr, value in gauges_set.items():
             res.append(prometheus_client.generate_latest(value))
+            logging.debug(attr)
         return Response(res, mimetype="text/plain")
 
     return log_keeper.bad_key(metrics)
 
 def byte_parser():
+    """Parse args"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-K", "--key", required=True, type=str, help="API Key for Bytesized Hosting"
@@ -53,6 +57,7 @@ def byte_parser():
     return parsed
 
 def prom_gauge_set(metrics):
+    """Set and return prom gauges with valid metrics"""
     gauges['memory_usage'].set(metrics.memory_usage)
     gauges['disk_quota'].set(metrics.disk_quota)
     gauges['bandwidth_quota'].set(metrics.bandwidth_quota)
