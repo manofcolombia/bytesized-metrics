@@ -14,7 +14,7 @@ ADD byte/ /app/byte
 
 ADD entrypoint.sh /app
 
-RUN pip install requests -r requirements.txt
+RUN pip install -r requirements.txt
 
 EXPOSE 8888/tcp
 
