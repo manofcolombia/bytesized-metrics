@@ -42,25 +42,25 @@ class ByteCollector():
             self.next_payment = (self.paid_till - date.today()).days
 
             self.memory_usage_gauge = GaugeMetricFamily(
-                "memory_usage", 'AppBox Memory Usage', labels=['appbox']
+                "bytesized_memory_usage", 'AppBox Memory Usage', labels=['appbox']
                 )
             self.memory_usage_gauge.add_metric([self.server_name], self.memory_usage)
             yield self.memory_usage_gauge
 
             self.disk_quota_gauge = GaugeMetricFamily(
-                "disk_quota", 'AppBox Disk Usage', labels=['appbox']
+                "bytesized_disk_quota", 'AppBox Disk Usage', labels=['appbox']
                 )
             self.disk_quota_gauge.add_metric([self.server_name], self.disk_quota)
             yield self.disk_quota_gauge
 
             self.bandwidth_quota_gauge = GaugeMetricFamily(
-                "bandwidth_quota", 'AppBox Bandwidth Usage', labels=['appbox']
+                "bytesized_bandwidth_quota", 'AppBox Bandwidth Usage', labels=['appbox']
                 )
             self.bandwidth_quota_gauge.add_metric([self.server_name], self.bandwidth_quota)
             yield self.bandwidth_quota_gauge
 
             self.next_payment_gauge = GaugeMetricFamily(
-                "next_payment", 'AppBox Payment Due in Days', labels=['appbox']
+                "bytesized_next_payment", 'AppBox Payment Due in Days', labels=['appbox']
                 )
             self.next_payment_gauge.add_metric([self.server_name], self.next_payment)
             yield self.next_payment_gauge
