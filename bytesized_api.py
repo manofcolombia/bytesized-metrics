@@ -1,47 +1,80 @@
 """Bytesized prometheus exporter"""
 import argparse
 import logging
-import prometheus_client
+import time
+import sys
+from datetime import date
 import requests
-from flask import Response, Flask
-from prometheus_client import Gauge
-from byte.byte_account import account
-from byte.byte_logger import log_keeper
+from prometheus_client import start_http_server
+from prometheus_client.core import GaugeMetricFamily, REGISTRY
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
-app = Flask(__name__)
+class ByteCollector():
+    '''Custom Prometheus collector for bytesized appboxes'''
 
-gauges = {}
-gauges['memory_usage'] = Gauge('bytesized_memory_usage', 'AppBox Memory Usage')
-gauges['disk_quota'] = Gauge('bytesized_disk_usage', 'AppBox Disk Quota')
-gauges['bandwidth_quota'] = Gauge('bytesized_bandwidth_usage', 'AppBox Bandwidth Quota')
-gauges['days_paid_till'] = Gauge('bytesized_days_paid_till', 'AppBox Days till next payment')
+    def __init__(self):
+        try:
+            self.args = byte_parser()
+            self.url = self.args.url
+            self.params = {'api_key': self.args.key}
+            self.response = requests.get(self.url, params=self.params)
+            if self.response.status_code != 200:
+                logging.info(f'Response Code: {self.response.status_code}')
+                logging.info("Request to api failed. Please verify you have the correct api key.")
+                sys.exit()
+            else:
+                self.response_json = self.response.json()
 
-@app.route('/metrics')
-def main():
-    """Main function"""
-    try:
-        args = byte_parser()
-        url = args.url
-        params = {'api_key': args.key}
-        response = requests.get(url, params=params)
-        response_json = response.json()
-        metrics = account(response_json, response.status_code)
-    except requests.exceptions.RequestException as exception:
-        logging.critical(exception)
-        return str(exception)
+        except requests.exceptions.RequestException as exception:
+            logging.critical(exception)
+            print(str(exception))
 
-    if metrics.response_code == 200:
-        log_keeper.success(metrics)
-        gauges_set = prom_gauge_set(metrics)
-        res = []
-        for attr, value in gauges_set.items():
-            res.append(prometheus_client.generate_latest(value))
-            logging.debug(attr)
-        return Response(res, mimetype="text/plain")
+    def collect(self):
+        '''Organize metrics'''
 
-    return log_keeper.bad_key(metrics)
+        for appbox in self.response_json:
+            self.server_name = appbox['server_name']
+            self.memory_usage = appbox['memory_usage']
+            self.disk_quota = appbox['disk_quota']
+            self.bandwidth_quota = appbox['bandwidth_quota']
+            self.paid_till = date.fromisoformat(appbox['paid_till'])
+            self.next_payment = (self.paid_till - date.today()).days
+
+            self.memory_usage_gauge = GaugeMetricFamily(
+                "memory_usage", 'AppBox Memory Usage', labels=['appbox']
+                )
+            self.memory_usage_gauge.add_metric([self.server_name], self.memory_usage)
+            yield self.memory_usage_gauge
+
+            self.disk_quota_gauge = GaugeMetricFamily(
+                "disk_quota", 'AppBox Disk Usage', labels=['appbox']
+                )
+            self.disk_quota_gauge.add_metric([self.server_name], self.disk_quota)
+            yield self.disk_quota_gauge
+
+            self.bandwidth_quota_gauge = GaugeMetricFamily(
+                "bandwidth_quota", 'AppBox Bandwidth Usage', labels=['appbox']
+                )
+            self.bandwidth_quota_gauge.add_metric([self.server_name], self.bandwidth_quota)
+            yield self.bandwidth_quota_gauge
+
+            self.next_payment_gauge = GaugeMetricFamily(
+                "next_payment", 'AppBox Payment Due in Days', labels=['appbox']
+                )
+            self.next_payment_gauge.add_metric([self.server_name], self.next_payment)
+            yield self.next_payment_gauge
+
+            logging.info(
+                f"""
+                    Response Code: {self.response.status_code}
+                    Server Name: {self.server_name}
+                    Memory Usage: {self.memory_usage}
+                    Disk Quota: {self.disk_quota}
+                    Bandwidth Quota: {self.bandwidth_quota}
+                    Days till Next Payment: {self.next_payment}
+                """
+            )
 
 def byte_parser():
     """Parse args"""
@@ -56,16 +89,8 @@ def byte_parser():
     parsed = parser.parse_args()
     return parsed
 
-def prom_gauge_set(metrics):
-    """Set and return prom gauges with valid metrics"""
-    gauges['memory_usage'].set(metrics.memory_usage)
-    gauges['disk_quota'].set(metrics.disk_quota)
-    gauges['bandwidth_quota'].set(metrics.bandwidth_quota)
-    gauges['days_paid_till'].set(metrics.days_paid_till)
-    return gauges
-
 if __name__ == "__main__":
-    try:
-        app.run(host='0.0.0.0', port=8888)
-    except OSError as error:
-        SystemExit(logging.critical(error))
+    start_http_server(8888)
+    REGISTRY.register(ByteCollector())
+    while True:
+        time.sleep(1)

@@ -10,8 +10,6 @@ ADD bytesized_api.py /app
 
 ADD requirements.txt /app
 
-ADD byte/ /app/byte
-
 ADD entrypoint.sh /app
 
 RUN pip install -r requirements.txt
