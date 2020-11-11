@@ -6,6 +6,10 @@ Prometheus exporter for bytesized appbox
 # Example
 docker run -d -e API="$apikey" -p 8888:8888  manofcolombia/bytesized-metrics:latest
 
+Optional environment vars:
+
+-e URL="$url"
+
 Generate your api key here: https://bytesized-hosting.com/api_keys
 
 We collect metrics on scrape. This is to mean the scrape interval in prometheus config determines how often metrics from the API are polled.
