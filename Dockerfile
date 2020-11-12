@@ -16,6 +16,8 @@ RUN pip install -r requirements.txt
 
 EXPOSE 8888/tcp
 
-ENV API="12345" 
+ENV API="12345"
+
+ENV URL="https://bytesized-hosting.com/api/v1/accounts.json"
 
 ENTRYPOINT ["sh", "entrypoint.sh"]
