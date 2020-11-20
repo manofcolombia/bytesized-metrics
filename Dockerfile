@@ -6,18 +6,13 @@ RUN mkdir /app
 
 WORKDIR /app
 
-ADD bytesized_api.py /app
-
-ADD requirements.txt /app
-
-ADD entrypoint.sh /app
+COPY bytesized_api.py requirements.txt entrypoint.sh /app/ 
 
 RUN pip install -r requirements.txt
 
 EXPOSE 8888/tcp
 
-ENV API="12345"
-
-ENV URL="https://bytesized-hosting.com/api/v1/accounts.json"
+ENV API="12345" \
+    URL="https://bytesized-hosting.com/api/v1/accounts.json"
 
 ENTRYPOINT ["sh", "entrypoint.sh"]

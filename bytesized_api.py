@@ -8,8 +8,6 @@ import requests
 from prometheus_client import start_http_server
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-
 class ByteCollector():
     '''Custom Prometheus collector for bytesized appboxes'''
 
@@ -17,6 +15,12 @@ class ByteCollector():
         self.args = byte_parser()
         self.url = self.args.url
         self.params = {'api_key': self.args.key}
+        if self.args.debug:
+            logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s')
+            logging.debug("Logging level set to debugging")
+        else:
+            logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+            logging.info("Logging level set to informational")
 
     def collect(self):
         '''Organize metrics'''
@@ -24,11 +28,12 @@ class ByteCollector():
         try:
             response = requests.get(self.url, params=self.params)
             if response.status_code != 200:
-                logging.info(f'Response Code: {response.status_code}')
-                logging.info("Request to api failed. Please verify you have the correct api key.")
+                logging.info('Response Code: %s %s',
+                    response.status_code, response.text)
                 sys.exit()
             else:
                 response_json = response.json()
+                logging.debug(response_json)
 
         except requests.exceptions.RequestException as exception:
             logging.critical(exception)
@@ -66,20 +71,12 @@ class ByteCollector():
             next_payment_gauge.add_metric([server_name], next_payment)
             yield next_payment_gauge
 
-            logging.info(
-                f"""
-                    Response Header Date: {response.headers['Date']}
-                    Response Code: {response.status_code}
-                    Server Name: {server_name}
-                    Memory Usage: {memory_usage}
-                    Disk Quota: {disk_quota}
-                    Bandwidth Quota: {bandwidth_quota}
-                    Days till Next Payment: {next_payment}
-                """
-            )
+            logging.info("Response Code: %s Collected metrics from: %s",
+                response.status_code, server_name)
 
 def byte_parser():
     """Parse args"""
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-K", "--key", required=True, type=str, help="API Key for Bytesized Hosting"
@@ -88,6 +85,9 @@ def byte_parser():
         "-U", "--url", default="https://bytesized-hosting.com/api/v1/accounts.json",
         type=str, help="url to accounts api"
         )
+    parser.add_argument(
+        "-D", "--debug", action="store_true", help="changes logging to debug"
+    )
     parsed = parser.parse_args()
     return parsed
 
