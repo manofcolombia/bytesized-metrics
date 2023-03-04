@@ -1,5 +1,5 @@
 # bytesized-metrics
-![Pylint](https://github.com/manofcolombia/bytesized-metrics/workflows/Pylint/badge.svg)
+[![Pylint](https://github.com/manofcolombia/bytesized-metrics/actions/workflows/pylint.yml/badge.svg)](https://github.com/manofcolombia/bytesized-metrics/actions/workflows/pylint.yml)
 
 Prometheus exporter for bytesized appbox
 
