@@ -4,6 +4,7 @@ import logging
 import time
 import sys
 from datetime import date
+import cloudscraper
 import requests
 from prometheus_client import start_http_server
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
@@ -22,7 +23,9 @@ class ByteCollector():
         '''Organize metrics'''
 
         try:
-            response = requests.get(self.url, params=self.params)
+            scrapper = cloudscraper.create_scraper(delay=10, browser="chrome")
+            response = scrapper.get(url=self.url, params=self.params)
+            # response = requests.get(self.url, params=self.params)
             if response.status_code != 200:
                 logging.info(f'Response Code: {response.status_code}')
                 logging.info("Request to api failed. Please verify you have the correct api key.")
